@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gmail 발송 test</title>
+</head>
+<body>
+    <div >
+        <label for="email" class="form-label">이메일 주소:</label>
+        <input type="email" id="email" class="form-control" placeholder="이메일 주소를 입력하세요" required>
+        <div id="email-error" class="text-danger"></div>
+    </div>
+    <!-- 제목 입력 필드 -->
+    <div>
+        <label for="title" class="form-label">제목:</label>
+        <input type="text" id="title" class="form-control" placeholder="제목을 입력하세요" required>
+    </div>
+    <div >
+        <button id="send-button" class="btn btn-primary mb-2">발송</button>
+    </div>
+
+
+    <script>
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+        document.getElementById('send-button').addEventListener('click', function () {
+            const email = document.getElementById('email').value;
+            let title = document.getElementById('title').value;
+            const selectedOptions = [];
+            const emailError = document.getElementById('email-error');
+
+            if (!validateEmail(email)) {
+                emailError.textContent = '유효한 이메일 주소를 입력하세요.';
+                return;
+            } else {
+                emailError.textContent = ''; // 오류 메시지 지우기
+            }
+
+            if (title.trim() === '') {
+                alert('제목을 입력하세요.');
+                return;
+            }
+            
+            const formData = {
+                email: email,
+                title: title,
+
+            };
+
+            fetch('/sendEmail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('이메일이 성공적으로 전송되었습니다!');
+                    } else {
+                        alert('이메일 전송에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('이메일 전송 중 오류가 발생했습니다.');
+                });
+        });
+        
+    </script>
+</body>
+
+</html>
